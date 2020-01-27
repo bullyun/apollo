@@ -1,0 +1,269 @@
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: apollo
+
+---
+
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5jbi1oYW5nemhvdS5hbGl5dW5jcy5jb20iOnsidXNlcm5hbWUiOiJidWxseXVuQGFsaXl1bi5jb20iLCJwYXNzd29yZCI6IkRtYW5uaXVAIzIwMjAiLCJlbWFpbCI6IndlaWNoYW5neXVAYnVsbHl1bi5jb20iLCJhdXRoIjoiWW5Wc2JIbDFia0JoYkdsNWRXNHVZMjl0T2tSdFlXNXVhWFZBSXpJd01qQT0ifX19
+kind: Secret
+metadata:
+  name: registry-secret
+  namespace: apollo
+type: kubernetes.io/dockerconfigjson
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: apollo-db
+  name: apollo-db
+  namespace: apollo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apollo-db
+  template:
+    metadata:
+      labels:
+        app: apollo-db
+    spec:
+      nodeName: bullyunv2-big-node1
+      containers:
+      - name: apollo-db
+        image: library/mysql:5.7.28
+        args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        - --init-connect='SET NAMES utf8mb4;'
+        - --innodb-flush-log-at-trx-commit=0
+        volumeMounts:
+        - name: apollo-db
+          mountPath: /var/lib/mysql
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: manniu2020
+      volumes:
+      - name: apollo-db
+        hostPath:
+          path: /data/apollo
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: apollo-db
+  name: apollo-db
+  namespace: apollo
+spec:
+  type: ClusterIP
+  clusterIP: 10.96.0.100
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: apollo-db
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: apollo-adminservice
+  name: apollo-adminservice
+  namespace: apollo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apollo-adminservice
+  template:
+    metadata:
+      labels:
+        app: apollo-adminservice
+    spec:
+      nodeName: bullyunv2-big-node1
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: apollo-adminservice
+        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-adminservice:1.5.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8090
+          protocol: TCP
+        env:
+        - name: DS_URL
+          value: jdbc:mysql://apollo-db.apollo.svc.cluster.local:3306/ApolloConfigDB?characterEncoding=utf8
+        - name: DS_USERNAME
+          value: root
+        - name: DS_PASSWORD
+          value: manniu2020
+        - name: SERVER_URL
+        volumeMounts:
+        - name: apollo-log
+          mountPath: /opt/logs
+      volumes:
+        - name: apollo-log
+          hostPath: 
+            path: /tmp/apollo-logs
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: apollo-adminservice
+  name: apollo-adminservice
+  namespace: apollo
+spec:
+  type: NodePort
+  ports:
+  - port: 8090
+    targetPort: 8090
+    nodePort: 30010
+  selector:
+    app: apollo-adminservice
+
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: apollo-portal
+  name: apollo-portal
+  namespace: apollo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apollo-portal
+  template:
+    metadata:
+      labels:
+        app: apollo-portal
+    spec:
+      nodeName: bullyunv2-big-node1
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: apollo-portal
+        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-portal:1.5.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8070
+          protocol: TCP
+        env:
+        - name: DS_URL
+          value: jdbc:mysql://apollo-db.apollo.svc.cluster.local:3306/ApolloPortalDB?characterEncoding=utf8
+        - name: DS_USERNAME
+          value: root
+        - name: DS_PASSWORD
+          value: manniu2020
+        - name: PRO_META
+          value: http://apollo-configservice.apollo.svc.cluster.local:8080
+        volumeMounts:
+        - name: apollo-log
+          mountPath: /opt/logs
+      volumes:
+        - name: apollo-log
+          hostPath:
+            path: /tmp/apollo-logs
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: apollo-portal
+  name: apollo-portal
+  namespace: apollo
+spec:
+  type: NodePort
+  ports:
+  - port: 8070
+    targetPort: 8070
+    nodePort: 30012
+  selector:
+    app: apollo-portal
+
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: apollo-configservice
+  name: apollo-configservice
+  namespace: apollo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apollo-configservice
+  template:
+    metadata:
+      labels:
+        app: apollo-configservice
+    spec:
+      nodeName: bullyunv2-big-node1
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: apollo-configservice
+        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-configservice:1.5.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: DS_URL
+          value: jdbc:mysql://apollo-db.apollo.svc.cluster.local:3306/ApolloConfigDB?characterEncoding=utf8
+        - name: DS_USERNAME
+          value: root
+        - name: DS_PASSWORD
+          value: manniu2020
+        volumeMounts:
+        - name: apollo-log
+          mountPath: /opt/logs
+      volumes:
+        - name: apollo-log
+          hostPath:
+            path: /tmp/apollo-logs
+
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: apollo-configservice
+  name: apollo-configservice
+  namespace: apollo
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30011
+  selector:
+    app: apollo-configservice
+

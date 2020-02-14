@@ -239,6 +239,9 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
                 appId, cluster, m_namespace);
             statusCodeException = new ApolloConfigStatusCodeException(ex.getStatusCode(),
                 message);
+
+            // 文件不存在，不需要重试
+            maxRetries = 0;
           }
           Tracer.logEvent("ApolloConfigException", ExceptionUtil.getDetailMessage(statusCodeException));
           transaction.setStatus(statusCodeException);

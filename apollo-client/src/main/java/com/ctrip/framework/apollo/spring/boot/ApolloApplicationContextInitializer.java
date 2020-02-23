@@ -9,6 +9,8 @@ import com.ctrip.framework.apollo.spring.util.SpringInjector;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import java.util.List;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -107,6 +109,20 @@ public class ApolloApplicationContextInitializer implements
     }
 
     environment.getPropertySources().addFirst(composite);
+
+    //二次开发,启动读取Apollo的系统属性类型Namespaces，批量设置到VM系统属性
+    String sysNamespaces = environment.getProperty(PropertySourcesConstants.APOLLO_SYSTEM_PROPERTY_NAMESPACES, "");
+    logger.debug("Apollo system property namespaces: {}", sysNamespaces);
+    List<String> sysNamespaceList = NAMESPACE_SPLITTER.splitToList(sysNamespaces);
+    for (String namespace : sysNamespaceList) {
+      Config config = ConfigService.getConfig(namespace);
+      Set<String> propertyNames = config.getPropertyNames();
+      for (String key : propertyNames) {
+        String val = config.getProperty(key, "");
+        System.setProperty(key, val);
+        logger.debug("Apollo set system property key:{},value:{}", key, val);
+      }
+    }
   }
 
   /**

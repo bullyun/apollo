@@ -6,4 +6,5 @@ public interface PropertySourcesConstants {
   String APOLLO_BOOTSTRAP_ENABLED = "apollo.bootstrap.enabled";
   String APOLLO_BOOTSTRAP_EAGER_LOAD_ENABLED = "apollo.bootstrap.eagerLoad.enabled";
   String APOLLO_BOOTSTRAP_NAMESPACES = "apollo.bootstrap.namespaces";
+  String APOLLO_SYSTEM_PROPERTY_NAMESPACES = "apollo.system.property.namespaces";
 }

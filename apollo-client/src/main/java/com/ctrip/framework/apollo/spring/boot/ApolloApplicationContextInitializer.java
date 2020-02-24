@@ -8,12 +8,15 @@ import com.ctrip.framework.apollo.spring.config.PropertySourcesConstants;
 import com.ctrip.framework.apollo.spring.util.SpringInjector;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -74,7 +77,7 @@ public class ApolloApplicationContextInitializer implements
   public void initialize(ConfigurableApplicationContext context) {
     ConfigurableEnvironment environment = context.getEnvironment();
 
-    String enabled = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, "false");
+    String enabled = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, "true");
     if (!Boolean.valueOf(enabled)) {
       logger.debug("Apollo bootstrap config is not enabled for context {}, see property: ${{}}", context, PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED);
       return;
@@ -97,28 +100,30 @@ public class ApolloApplicationContextInitializer implements
       return;
     }
 
+    String sysNamespaces = environment.getProperty(PropertySourcesConstants.APOLLO_SYSTEM_PROPERTY_NAMESPACES, "");
+    logger.debug("Apollo system property namespaces: {}", sysNamespaces);
+    List<String> sysNamespaceList = NAMESPACE_SPLITTER.splitToList(sysNamespaces);
+
     String namespaces = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES, ConfigConsts.NAMESPACE_APPLICATION);
     logger.debug("Apollo bootstrap namespaces: {}", namespaces);
     List<String> namespaceList = NAMESPACE_SPLITTER.splitToList(namespaces);
+    namespaceList = new ArrayList<>(namespaceList);
+    namespaceList.addAll(sysNamespaceList);
 
     CompositePropertySource composite = new CompositePropertySource(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
     for (String namespace : namespaceList) {
       Config config = ConfigService.getConfig(namespace);
-
       composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
     }
-
     environment.getPropertySources().addFirst(composite);
 
     //二次开发,启动读取Apollo的系统属性类型Namespaces，批量设置到VM系统属性
-    String sysNamespaces = environment.getProperty(PropertySourcesConstants.APOLLO_SYSTEM_PROPERTY_NAMESPACES, "");
-    logger.debug("Apollo system property namespaces: {}", sysNamespaces);
-    List<String> sysNamespaceList = NAMESPACE_SPLITTER.splitToList(sysNamespaces);
+    PropertySourcesPlaceholdersResolver placeholdersResolver = new PropertySourcesPlaceholdersResolver(environment);
     for (String namespace : sysNamespaceList) {
       Config config = ConfigService.getConfig(namespace);
       Set<String> propertyNames = config.getPropertyNames();
       for (String key : propertyNames) {
-        String val = config.getProperty(key, "");
+        String val = (String)placeholdersResolver.resolvePlaceholders(config.getProperty(key, ""));
         System.setProperty(key, val);
         logger.debug("Apollo set system property key:{},value:{}", key, val);
       }
@@ -173,7 +178,7 @@ public class ApolloApplicationContextInitializer implements
       return;
     }
 
-    Boolean bootstrapEnabled = configurableEnvironment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, Boolean.class, false);
+    Boolean bootstrapEnabled = configurableEnvironment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, Boolean.class, true);
 
     if (bootstrapEnabled) {
       initialize(configurableEnvironment);

@@ -72,7 +72,7 @@ public class XMLConfigAnnotationTest extends AbstractSpringIntegrationTest {
     doAnswer(new Answer() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        applicationListeners.add(invocation.getArgumentAt(0, ConfigChangeListener.class));
+        applicationListeners.add((ConfigChangeListener)invocation.getArgument(0));
 
         return Void.class;
       }
@@ -81,7 +81,7 @@ public class XMLConfigAnnotationTest extends AbstractSpringIntegrationTest {
     doAnswer(new Answer() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        fxApolloListeners.add(invocation.getArgumentAt(0, ConfigChangeListener.class));
+        fxApolloListeners.add((ConfigChangeListener)invocation.getArgument(0));
 
         return Void.class;
       }

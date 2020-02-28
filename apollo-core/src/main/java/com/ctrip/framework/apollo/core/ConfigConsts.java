@@ -9,4 +9,6 @@ public interface ConfigConsts {
   String CONFIG_FILE_CONTENT_KEY = "content";
   String NO_APPID_PLACEHOLDER = "ApolloNoAppIdPlaceHolder";
   long NOTIFICATION_ID_PLACEHOLDER = -1;
+  //自定义
+  String APOLLO_CONFIG_SERVICE_KEY = "apollo.configService";
 }

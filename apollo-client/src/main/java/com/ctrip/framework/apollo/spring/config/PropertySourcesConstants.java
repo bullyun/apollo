@@ -8,6 +8,4 @@ public interface PropertySourcesConstants {
   String APOLLO_BOOTSTRAP_NAMESPACES = "apollo.bootstrap.namespaces";
   //自定义
   String APOLLO_SYSTEM_PROPERTY_NAMESPACES = "apollo.system.property.namespaces";
-  String APOLLO_CONFIGSERVICE = "apollo.configService";
-
 }

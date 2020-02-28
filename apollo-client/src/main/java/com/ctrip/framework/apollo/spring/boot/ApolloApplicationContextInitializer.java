@@ -110,6 +110,18 @@ public class ApolloApplicationContextInitializer implements
     namespaceList = new ArrayList<>(namespaceList);
     namespaceList.addAll(sysNamespaceList);
 
+    //配置文件支持设置apollo.configService。 ConfigServiceLocator.initConfigServices
+    // 1. Get from System Property
+    String configServices = System.getProperty(PropertySourcesConstants.APOLLO_CONFIGSERVICE);
+    if (Strings.isNullOrEmpty(configServices)) {
+      // 2. Get from OS environment variable
+      configServices = environment.getProperty(PropertySourcesConstants.APOLLO_CONFIGSERVICE, "");
+    }
+    if (!Strings.isNullOrEmpty(configServices)) {
+      //设置System Property或者OS environment variable
+      System.setProperty(PropertySourcesConstants.APOLLO_CONFIGSERVICE, configServices);
+    }
+
     CompositePropertySource composite = new CompositePropertySource(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
     for (String namespace : namespaceList) {
       Config config = ConfigService.getConfig(namespace);
@@ -128,6 +140,7 @@ public class ApolloApplicationContextInitializer implements
         logger.debug("Apollo set system property key:{},value:{}", key, val);
       }
     }
+
   }
 
   /**

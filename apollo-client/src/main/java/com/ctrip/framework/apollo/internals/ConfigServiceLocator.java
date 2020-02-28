@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.ServiceNameConsts;
 import com.ctrip.framework.foundation.Foundation;
 import java.lang.reflect.Type;
@@ -72,14 +73,14 @@ public class ConfigServiceLocator {
 
   private List<ServiceDTO> getCustomizedConfigService() {
     // 1. Get from System Property
-    String configServices = System.getProperty("apollo.configService");
+    String configServices = System.getProperty(ConfigConsts.APOLLO_CONFIG_SERVICE_KEY);
     if (Strings.isNullOrEmpty(configServices)) {
       // 2. Get from OS environment variable
       configServices = System.getenv("APOLLO_CONFIGSERVICE");
     }
     if (Strings.isNullOrEmpty(configServices)) {
       // 3. Get from server.properties
-      configServices = Foundation.server().getProperty("apollo.configService", null);
+      configServices = Foundation.server().getProperty(ConfigConsts.APOLLO_CONFIG_SERVICE_KEY, null);
     }
 
     if (Strings.isNullOrEmpty(configServices)) {

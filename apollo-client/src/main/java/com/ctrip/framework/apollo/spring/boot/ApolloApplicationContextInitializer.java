@@ -66,7 +66,7 @@ public class ApolloApplicationContextInitializer implements
   private static final Logger logger = LoggerFactory.getLogger(ApolloApplicationContextInitializer.class);
   private static final Splitter NAMESPACE_SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
   private static final String[] APOLLO_SYSTEM_PROPERTIES = {"app.id", ConfigConsts.APOLLO_CLUSTER_KEY,
-      "apollo.cacheDir", ConfigConsts.APOLLO_META_KEY};
+      "apollo.cacheDir", ConfigConsts.APOLLO_META_KEY, PropertySourcesConstants.APOLLO_CONFIGSERVICE};
 
   private final ConfigPropertySourceFactory configPropertySourceFactory = SpringInjector
       .getInstance(ConfigPropertySourceFactory.class);
@@ -109,18 +109,6 @@ public class ApolloApplicationContextInitializer implements
     List<String> namespaceList = NAMESPACE_SPLITTER.splitToList(namespaces);
     namespaceList = new ArrayList<>(namespaceList);
     namespaceList.addAll(sysNamespaceList);
-
-    //配置文件支持设置apollo.configService。 ConfigServiceLocator.initConfigServices
-    // 1. Get from System Property
-    String configServices = System.getProperty(PropertySourcesConstants.APOLLO_CONFIGSERVICE);
-    if (Strings.isNullOrEmpty(configServices)) {
-      // 2. Get from OS environment variable
-      configServices = environment.getProperty(PropertySourcesConstants.APOLLO_CONFIGSERVICE, "");
-    }
-    if (!Strings.isNullOrEmpty(configServices)) {
-      //设置System Property或者OS environment variable
-      System.setProperty(PropertySourcesConstants.APOLLO_CONFIGSERVICE, configServices);
-    }
 
     CompositePropertySource composite = new CompositePropertySource(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
     for (String namespace : namespaceList) {

@@ -93,9 +93,10 @@ public class RemoteConfigRepositoryTest {
   @Test
   public void testLoadConfig() throws Exception {
     String someKey = "someKey";
-    String someValue = "someValue";
+    String someValue = "ENC(rX5ewwK1w7X2UK4/gZDwKmlkV4UO9IP7KiWJbZLvzAoB4xhIkXez3xQcWw3GEy3qlOG1DgQI0ssdT6x/C08Fmw==)";
     Map<String, String> configurations = Maps.newHashMap();
     configurations.put(someKey, someValue);
+    configurations.put("server.port","ENC(I1hEZ9t/rkG+AcOMqTfJ90sexadTU6UDNJLkuKqQuaMc5qJTnSIvImTz9nLwG6fhm4ttn3urjVYnAggaivicEQ==)");
     ApolloConfig someApolloConfig = assembleApolloConfig(configurations);
 
     when(someResponse.getStatusCode()).thenReturn(200);

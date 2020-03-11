@@ -1,16 +1,15 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.ctrip.framework.apollo.util.RSAEncryptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,7 +226,18 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
           ApolloConfig result = response.getBody();
 
           logger.debug("Loaded config for {}: {}", m_namespace, result);
-
+          //数据解密
+          Map<String, String> map = result.getConfigurations();
+          Iterator<Map.Entry<String, String>> entries = map.entrySet().iterator();
+          while(entries.hasNext()){
+            Map.Entry<String, String> entry = entries.next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (RSAEncryptUtil.isEncryptedValue(value)) {
+              map.put(key, RSAEncryptUtil.decryptValue(value));
+            }
+          }
+          result.setConfigurations(map);
           return result;
         } catch (ApolloConfigStatusCodeException ex) {
           ApolloConfigStatusCodeException statusCodeException = ex;

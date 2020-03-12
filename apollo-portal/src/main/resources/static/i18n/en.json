@@ -63,6 +63,7 @@
   "Component.ConfigItem.ItemValueNotHiddenChars": "No Hidden Characters",
   "Component.ConfigItem.ItemComment": "Comment",
   "Component.ConfigItem.ChooseCluster": "Select Cluster",
+  "Component.ConfigItem.ChooseEncrypt": "Select Encrypt",
   "Component.MergePublish.Title": "Full Release",
   "Component.MergePublish.Tips": "Full release will merge the configurations of grayscale version into the main version and release them.",
   "Component.MergePublish.NextStep": "After full release, choose which behavior you want",

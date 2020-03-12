@@ -63,6 +63,7 @@
   "Component.ConfigItem.ItemValueNotHiddenChars": "无隐藏字符",
   "Component.ConfigItem.ItemComment": "Comment",
   "Component.ConfigItem.ChooseCluster": "选择集群",
+  "Component.ConfigItem.ChooseEncrypt": "是否加密",
   "Component.MergePublish.Title": "全量发布",
   "Component.MergePublish.Tips": "全量发布将会把灰度版本的配置合并到主分支，并发布。",
   "Component.MergePublish.NextStep": "全量发布后,您希望",

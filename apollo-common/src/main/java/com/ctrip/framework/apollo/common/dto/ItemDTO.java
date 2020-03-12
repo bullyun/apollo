@@ -13,6 +13,8 @@ public class ItemDTO extends BaseDTO{
 
   private String comment;
 
+  private Boolean encrypt;
+
   private int lineNum;
 
   public ItemDTO() {
@@ -74,4 +76,11 @@ public class ItemDTO extends BaseDTO{
     this.lineNum = lineNum;
   }
 
+  public Boolean getEncrypt() {
+    return encrypt;
+  }
+
+  public void setEncrypt(Boolean encrypt) {
+    this.encrypt = encrypt;
+  }
 }

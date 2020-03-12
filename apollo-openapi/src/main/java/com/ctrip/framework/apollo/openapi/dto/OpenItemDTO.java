@@ -8,6 +8,8 @@ public class OpenItemDTO extends BaseDTO {
 
   private String comment;
 
+  private Boolean encrypt;
+
   public String getKey() {
     return key;
   }
@@ -30,6 +32,14 @@ public class OpenItemDTO extends BaseDTO {
 
   public void setComment(String comment) {
     this.comment = comment;
+  }
+
+  public Boolean getEncrypt() {
+    return encrypt;
+  }
+
+  public void setEncrypt(Boolean encrypt) {
+    this.encrypt = encrypt;
   }
 
   @Override

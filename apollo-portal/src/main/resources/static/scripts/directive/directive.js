@@ -191,6 +191,14 @@ directive_module.directive('apollorequiredfield', function ($compile, $window) {
     }
 });
 
+/** 单选项*/
+directive_module.directive('apollocheckbox', function ($compile, $window) {
+      return {
+          restrict: 'E',
+          template: '<label><input type="radio" ng-value=false ng-model="item.encrypt" name="encrypt" ng-checked="true">否</label><label><input type="radio" ng-value=true ng-model="item.encrypt" name="encrypt">是</label>'
+      }
+});
+
 /**  确认框 */
 directive_module.directive('apolloconfirmdialog', function ($compile, $window, $sce,$translate) {
     return {

@@ -12,6 +12,7 @@ import com.ctrip.framework.apollo.common.dto.ItemDTO;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.common.exception.NotFoundException;
 import com.ctrip.framework.apollo.common.utils.BeanUtils;
+import com.ctrip.framework.apollo.common.utils.RSAEncryptUtil;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,9 @@ public class ItemController {
   private final ItemService itemService;
   private final NamespaceService namespaceService;
   private final CommitService commitService;
+
+  private final String key = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMLM89ZQYUcZ6BwetRkaZiqeWoGQsEKIscc22oodkaMhA6aGYgpgBnfA"
+          + "MiCyNUF325B0B73bYfAWEdt9DFIxiU0CAwEAAQ==";
 
   public ItemController(final ItemService itemService, final NamespaceService namespaceService, final CommitService commitService) {
     this.itemService = itemService;
@@ -48,6 +52,11 @@ public class ItemController {
     if (managedEntity != null) {
       throw new BadRequestException("item already exists");
     } else {
+      //1. 若vaule的值是已经是ENC(******)格式不加密 否则加密
+      if (dto.getEncrypt() != null && !"".equals(dto.getEncrypt())
+              && !RSAEncryptUtil.isEncryptedValue(entity.getValue())) {
+        entity.setValue(RSAEncryptUtil.encrypt(entity.getValue(), key));
+      }
       entity = itemService.save(entity);
       builder.createItem(entity);
     }
@@ -80,6 +89,11 @@ public class ItemController {
     Item managedEntity = itemService.findOne(itemId);
     if (managedEntity == null) {
       throw new BadRequestException("item not exist");
+    }
+    //1. 若vaule的值是已经是ENC(******)格式不加密 否则加密
+    if (itemDTO.getEncrypt() != null && itemDTO.getEncrypt()
+            && !RSAEncryptUtil.isEncryptedValue(entity.getValue())) {
+      entity.setValue(RSAEncryptUtil.encrypt(entity.getValue(), key));
     }
 
     Item beforeUpdateItem = BeanUtils.transform(Item.class, managedEntity);

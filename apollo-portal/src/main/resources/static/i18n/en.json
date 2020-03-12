@@ -1,5 +1,5 @@
 {
-  "Common.Title": "Apollo Configuration Center",
+  "Common.Title": "manniu Configuration Center",
   "Common.Ctrip": "Ctrip",
   "Common.CtripDepartment": "Framework R&D Department",
   "Common.Nav.ShowNavBar": "Display navigation bar",
@@ -323,7 +323,7 @@
   "Cluster.ClusterCreated": "Create cluster successfully",
   "Cluster.ClusterCreateFailed": "Failed to create cluster",
   "Cluster.PleaseChooseEnvironment": "Please select the environment",
-  "Config.Title": "Apollo Configuration Center",
+  "Config.Title": "Manniu Configuration Center",
   "Config.AppIdNotFound": "doesn't exist, ",
   "Config.ClickByCreate": "click to create",
   "Config.EnvList": "Environments",
@@ -455,6 +455,7 @@
   "Namespace.CheckNamespaceNameLengthTip": "The namespace name should not be longer than 32 characters. Department prefix:'{{departmentLength}}' characters, name {{namespaceLength}} characters",
   "ServiceConfig.Title": "System Configuration",
   "ServiceConfig.Tips": "(Maintain Apollo PortalDB.ServerConfig table data, will override configuration items if they already exist, or create configuration items. Configuration updates take effect automatically in a minute)",
+  "ServiceConfig.PublicKeyTips" : "⚠️ When configuring the public key Fixed key: publickey, the public key is not allowed to be modified under normal circumstances, please exercise caution ！！！！",
   "ServiceConfig.Key": "Key",
   "ServiceConfig.KeyTips": "(Please query the configuration information before modifying the configuration)",
   "ServiceConfig.Value": "Value",

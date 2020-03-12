@@ -101,6 +101,44 @@
                 </div>
             </aside>
         </section>
+
+        <!--密钥生成工具-->
+        <section class="media favorites-app-list">
+            <aside class="media-left text-center">
+                <h5>密钥工具</h5>
+            </aside>
+            <aside class="media-body">
+                <div class="app-panel col-md-2 text-center" ng-repeat="app in favorites"
+                     ng-click="goToAppHomePage(app.appId)" ng-mouseover="toggleOperationBtn(app)"
+                     ng-mouseout="toggleOperationBtn(app)">
+                    <div class="thumbnail hover">
+                        <h4 ng-bind="app.appId"></h4>
+                        <h5 ng-bind="app.name"></h5>
+
+                        <p class="operate-panel" ng-show="app.showOperationBtn">
+                            <button class="btn btn-default btn-xs" title="{{'Index.Topping' | translate }}"
+                                    ng-click="toTop(app.favoriteId);$event.stopPropagation();">
+                                <img src="img/top.png" class="i-15">
+                            </button>
+                            <button class="btn btn-default btn-xs" title="{{'Index.FavoriteCancel' | translate }}"
+                                    ng-click="deleteFavorite(app.favoriteId);$event.stopPropagation();">
+                                <img src="img/like.png" class="i-15">
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-2 text-center" ng-show="hasMoreFavorites" ng-click="getUserFavorites()">
+                    <div href="#" class="thumbnail hover cursor-pointer">
+                        <img class="more-img" src="img/more.png" />
+                        <h5>{{'Index.LoadMore' | translate }}</h5>
+                    </div>
+                </div>
+                <div class="no-favorites text-center" ng-show="!favorites || favorites.length == 0">
+                    <h4>{{'Index.FavoriteTip' | translate }}</h4>
+                </div>
+
+            </aside>
+        </section>
     </div>
 
 

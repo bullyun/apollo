@@ -1,19 +1,7 @@
 package com.ctrip.framework.apollo.portal.api;
 
 
-import com.ctrip.framework.apollo.common.dto.AppDTO;
-import com.ctrip.framework.apollo.common.dto.AppNamespaceDTO;
-import com.ctrip.framework.apollo.common.dto.ClusterDTO;
-import com.ctrip.framework.apollo.common.dto.CommitDTO;
-import com.ctrip.framework.apollo.common.dto.GrayReleaseRuleDTO;
-import com.ctrip.framework.apollo.common.dto.InstanceDTO;
-import com.ctrip.framework.apollo.common.dto.ItemChangeSets;
-import com.ctrip.framework.apollo.common.dto.ItemDTO;
-import com.ctrip.framework.apollo.common.dto.NamespaceDTO;
-import com.ctrip.framework.apollo.common.dto.NamespaceLockDTO;
-import com.ctrip.framework.apollo.common.dto.PageDTO;
-import com.ctrip.framework.apollo.common.dto.ReleaseDTO;
-import com.ctrip.framework.apollo.common.dto.ReleaseHistoryDTO;
+import com.ctrip.framework.apollo.common.dto.*;
 import com.ctrip.framework.apollo.core.enums.Env;
 import com.google.common.base.Joiner;
 import java.util.Arrays;
@@ -481,4 +469,10 @@ public class AdminServiceAPI {
 
   }
 
+  @Service
+  public static class AdminServiceConfigAPI extends API {
+    public ServerConfigDTO createAdminServiceConfig(Env env, ServerConfigDTO serverConfig) {
+      return restTemplate.post(env, "/Syn/PotalServerConfig/To/AdminServerConfig", serverConfig, ServerConfigDTO.class);
+    }
+  }
 }

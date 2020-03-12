@@ -5,7 +5,9 @@ import com.ctrip.framework.apollo.biz.config.BizConfig;
 import com.ctrip.framework.apollo.biz.entity.Audit;
 import com.ctrip.framework.apollo.biz.entity.Item;
 import com.ctrip.framework.apollo.biz.entity.Namespace;
+import com.ctrip.framework.apollo.biz.entity.ServerConfig;
 import com.ctrip.framework.apollo.biz.repository.ItemRepository;
+import com.ctrip.framework.apollo.biz.repository.ServerConfigRepository;
 import com.ctrip.framework.apollo.common.exception.BadRequestException;
 import com.ctrip.framework.apollo.common.exception.NotFoundException;
 import com.ctrip.framework.apollo.common.utils.BeanUtils;
@@ -23,16 +25,19 @@ import java.util.Map;
 public class ItemService {
 
   private final ItemRepository itemRepository;
+  private final ServerConfigRepository serverConfigRepository;
   private final NamespaceService namespaceService;
   private final AuditService auditService;
   private final BizConfig bizConfig;
 
   public ItemService(
       final ItemRepository itemRepository,
+      final ServerConfigRepository serverConfigRepository,
       final @Lazy NamespaceService namespaceService,
       final AuditService auditService,
       final BizConfig bizConfig) {
     this.itemRepository = itemRepository;
+    this.serverConfigRepository = serverConfigRepository;
     this.namespaceService = namespaceService;
     this.auditService = auditService;
     this.bizConfig = bizConfig;
@@ -181,6 +186,11 @@ public class ItemService {
       return namespaceValueLengthOverride.get(namespaceId);
     }
     return bizConfig.itemValueLengthLimit();
+  }
+
+  public ServerConfig findByKey() {
+    ServerConfig serverConfig = serverConfigRepository.findByKey("publickey");
+    return serverConfig == null ? null : serverConfig;
   }
 
 }

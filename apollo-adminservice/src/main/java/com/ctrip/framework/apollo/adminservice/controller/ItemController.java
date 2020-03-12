@@ -4,6 +4,7 @@ import com.ctrip.framework.apollo.adminservice.aop.PreAcquireNamespaceLock;
 import com.ctrip.framework.apollo.biz.entity.Commit;
 import com.ctrip.framework.apollo.biz.entity.Item;
 import com.ctrip.framework.apollo.biz.entity.Namespace;
+import com.ctrip.framework.apollo.biz.entity.ServerConfig;
 import com.ctrip.framework.apollo.biz.service.CommitService;
 import com.ctrip.framework.apollo.biz.service.ItemService;
 import com.ctrip.framework.apollo.biz.service.NamespaceService;
@@ -31,9 +32,6 @@ public class ItemController {
   private final NamespaceService namespaceService;
   private final CommitService commitService;
 
-  private final String key = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMLM89ZQYUcZ6BwetRkaZiqeWoGQsEKIscc22oodkaMhA6aGYgpgBnfA"
-          + "MiCyNUF325B0B73bYfAWEdt9DFIxiU0CAwEAAQ==";
-
   public ItemController(final ItemService itemService, final NamespaceService namespaceService, final CommitService commitService) {
     this.itemService = itemService;
     this.namespaceService = namespaceService;
@@ -55,7 +53,10 @@ public class ItemController {
       //1. 若vaule的值是已经是ENC(******)格式不加密 否则加密
       if (dto.getEncrypt() != null && !"".equals(dto.getEncrypt())
               && !RSAEncryptUtil.isEncryptedValue(entity.getValue())) {
-        entity.setValue(RSAEncryptUtil.encrypt(entity.getValue(), key));
+        ServerConfig serverConfig = itemService.findByKey();
+        if (serverConfig.getValue() != null) {
+          entity.setValue(RSAEncryptUtil.encrypt(entity.getValue(), serverConfig.getValue()));
+        }
       }
       entity = itemService.save(entity);
       builder.createItem(entity);
@@ -93,7 +94,10 @@ public class ItemController {
     //1. 若vaule的值是已经是ENC(******)格式不加密 否则加密
     if (itemDTO.getEncrypt() != null && itemDTO.getEncrypt()
             && !RSAEncryptUtil.isEncryptedValue(entity.getValue())) {
-      entity.setValue(RSAEncryptUtil.encrypt(entity.getValue(), key));
+      ServerConfig serverConfig = itemService.findByKey();
+      if (serverConfig.getValue() != null) {
+        entity.setValue(RSAEncryptUtil.encrypt(entity.getValue(), serverConfig.getValue()));
+      }
     }
 
     Item beforeUpdateItem = BeanUtils.transform(Item.class, managedEntity);

@@ -1,6 +1,6 @@
 {
   "Common.Title": "Apollo配置中心",
-  "Common.Ctrip": "携程",
+  "Common.Ctrip": "蛮牛",
   "Common.CtripDepartment": "框架研发部",
   "Common.Nav.ShowNavBar": "显示导航栏",
   "Common.Nav.HideNavBar": "隐藏导航栏",
@@ -455,6 +455,7 @@
   "Namespace.CheckNamespaceNameLengthTip": "namespace名称不能大于32个字符. 部门前缀：'{{departmentLength}}'个字符, 名称{{namespaceLength}}个字符",
   "ServiceConfig.Title": "应用配置",
   "ServiceConfig.Tips": "（维护ApolloPortalDB.ServerConfig表数据，如果已存在配置项则会覆盖，否则会创建配置项。配置更新后，一分钟后自动生效）",
+  "ServiceConfig.PublicKeyTips" : "⚠️ 配置公钥的时候 固定key : publickey ,正常情况下公钥不允许修改，请谨慎操作 ！！！！",
   "ServiceConfig.Key": "key",
   "ServiceConfig.KeyTips": "(修改配置前请先查询该配置信息)",
   "ServiceConfig.Value": "value",

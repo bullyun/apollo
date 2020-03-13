@@ -1,11 +1,19 @@
 package com.ctrip.framework.apollo.biz.service;
 
+import com.ctrip.framework.apollo.biz.entity.Commit;
 import com.ctrip.framework.apollo.biz.entity.ServerConfig;
+import com.ctrip.framework.apollo.biz.repository.CommitRepository;
 import com.ctrip.framework.apollo.biz.repository.ServerConfigRepository;
+import com.ctrip.framework.apollo.common.utils.RSAEncryptUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author bbb
@@ -16,9 +24,15 @@ public class AdminServerConfigService {
     private final static Logger logger = LoggerFactory.getLogger(AdminServerConfigService.class);
 
     private final ServerConfigRepository serverConfigRepository;
+    private final CommitRepository commitRepository;
+    private final ItemService itemService;
 
-    public AdminServerConfigService(ServerConfigRepository serverConfigRepository) {
+    public AdminServerConfigService(ServerConfigRepository serverConfigRepository,
+                                    CommitRepository commitRepository,
+                                    ItemService itemService) {
         this.serverConfigRepository = serverConfigRepository;
+        this.commitRepository = commitRepository;
+        this.itemService= itemService;
     }
 
     @Transactional
@@ -38,6 +52,7 @@ public class AdminServerConfigService {
                 serverConfig.setDataChangeCreatedTime(oldServerConfig.getDataChangeCreatedTime());
                 serverConfigRepository.save(serverConfig);
                 //更新数据库中所有的加密的配置重新加密
+                updateAllEncryptData();
             }
         }
     }
@@ -56,5 +71,50 @@ public class AdminServerConfigService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 公钥修改后，更新所有加密过的数据
+     *  不建议这么操作。。。先支持先这功能
+     */
+    private void updateAllEncryptData() {
+        Iterable<Commit> commits =  commitRepository.findAll();
+        if (commits == null) {
+            return;
+        }
+        ServerConfig serverConfig = itemService.findByKey();
+        if (serverConfig.getValue() == null) {
+            return;
+        }
+        for (Commit commit : commits) {
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonObject = jsonParser.parse(commit.getChangeSets()).getAsJsonObject();
+            JsonArray jsonArray = jsonParser.parse(jsonObject.get("createItems").toString()).getAsJsonArray();
+            if (jsonArray.size() == 0) {
+                continue;
+            }
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject jsonObject1 = jsonArray.get(i).getAsJsonObject();
+                String vaule = jsonObject1.get("value").getAsString();
+                if (!RSAEncryptUtil.isEncryptedValue(vaule)) {
+                    continue;
+                }
+                jsonObject1.addProperty("value", getNewENcrypt(vaule, serverConfig.getValue()));
+                jsonArray.add(jsonObject1);
+            }
+            commit.setChangeSets(jsonArray.toString());
+            commitRepository.save(commit);
+        }
+    }
+
+    /**
+     * 获取新加密的密码
+     * @param oldENcryptData 密钥更换前的密码
+     * @return 新加密的密码
+     */
+    private String getNewENcrypt(String oldENcryptData, String publicKey) {
+        //老的密码解密获取明文  在用新的公钥加密
+        String data = RSAEncryptUtil.decryptValue(oldENcryptData);
+        return RSAEncryptUtil.encrypt(data, publicKey);
     }
 }

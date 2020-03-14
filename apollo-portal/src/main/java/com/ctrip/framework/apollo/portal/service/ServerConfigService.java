@@ -18,6 +18,9 @@ public class ServerConfigService {
     }
 
     public ServerConfigDTO createAdminServierConfig(Env env, ServerConfigDTO serverConfig) {
+        if (!serverConfig.getKey().equals("publickey")) {
+            return null;
+        }
         ServerConfigDTO serverConfigDTO = adminServiceConfigAPI.createAdminServiceConfig(env, serverConfig);
         return serverConfigDTO;
     }

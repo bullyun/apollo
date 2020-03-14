@@ -81,7 +81,7 @@ public class AdminServerConfigService {
             return;
         }
         ServerConfig serverConfig = itemService.findByKey();
-        if (serverConfig.getValue() == null) {
+        if (serverConfig == null || serverConfig.getValue() == null) {
             return;
         }
         for (Commit commit : commits) {

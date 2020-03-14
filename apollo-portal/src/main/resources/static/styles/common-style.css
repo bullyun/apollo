@@ -736,16 +736,20 @@ table th {
 }
 
 .create-app-list .media-left {
-    background: #a9d96c;
+    background: #3c763d;
 }
 
 .create-app-list .create-btn {
-    background: #a9d96c;
+    background: #3c763d;
     color: #fff
 }
 
 .create-app-list .create-btn:hover {
-    background: #81AB56;
+    background: #3c763d;
+}
+
+.appdiy {
+     background-color: #dff0d8
 }
 
 .create-app-list .create-btn img {
@@ -754,7 +758,7 @@ table th {
 }
 
 .favorites-app-list .media-left {
-    background: #57c8f2;
+    background: #3c763d;
 }
 
 .favorites-app-list .no-favorites {
@@ -762,7 +766,7 @@ table th {
 }
 
 .visit-app-list .media-left {
-    background: #41cac0;
+    background: #3c763d;
 }
 
 #rulesModal .rules-ip-selector {

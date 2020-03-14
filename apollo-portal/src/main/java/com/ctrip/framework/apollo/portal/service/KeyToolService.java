@@ -24,7 +24,6 @@ public class KeyToolService {
         File pubfile = createFile(getKeyStr(keyPair, KeyEnum.PUBLIC_KEY.type), KeyEnum.PUBLIC_KEY.type);
         String[] files = new String[] {prifile.getAbsolutePath(), pubfile.getAbsolutePath()};
         down(files, request, response);
-//        downKey(request, response, prifile.getName(), prifile);
     }
 
     /**
@@ -65,56 +64,6 @@ public class KeyToolService {
             return txt;
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    /**
-     * 下载私钥
-     * @param request
-     * @param response
-     * @param filename 要下载的文件名
-     * @param file     需要下载的文件对象
-     * @throws IOException
-     */
-    public void downKey(HttpServletRequest request, HttpServletResponse response, String filename, File file) {
-        if (file.exists()) {
-            OutputStream out = null;
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(file);
-                String agent = request.getHeader("user-agent");
-                if (agent.contains("FireFox")) {
-                    filename = new String(filename.getBytes("UTF-8"), "iso-8859-1");
-                } else {
-                    filename = URLEncoder.encode(filename, "UTF-8");
-                }
-                response.setContentType("application/octet-stream");
-                response.setContentLength((int)file.length());
-                response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-                out = response.getOutputStream();
-                int len = 0;
-                byte[] buffer = new byte[1024 * 2];
-                while ((len = in.read(buffer)) > 0) {
-                    out.write(buffer, 0, len);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
         }
     }
 

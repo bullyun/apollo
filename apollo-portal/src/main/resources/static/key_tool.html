@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="server_config">
+<html ng-app="key_tool">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -10,40 +10,103 @@
     <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
     <link rel="stylesheet" type="text/css" media='all' href="vendor/angular/loading-bar.min.css">
     <link rel="stylesheet" type="text/css" href="styles/common-style.css">
-    <title>{{'Common.Nav.keyTool' | translate }}</title>
+    <title>密钥工具</title>
 </head>
 
 <body>
+    <nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand logo" href="/">
+                <img src="../../img/logo-simple.png" style="height:45px; margin-top: -13px">
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-    <apollonav></apollonav>
-    <div class="container-fluid apollo-container">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="https://github.com/ctripcorp/apollo" target="_blank">
+                        <span class="glyphicon glyphicon-question-sign"></span> 帮助
+                    </a>
+                </li>
+            </ul>
 
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel">
-                    <header class="panel-heading">
-                        {{'Common.Nav.keyTool' | translate }}
-                        <small>{{'ServiceConfig.PublicKeyTips2' | translate }}</small>
-                    </header>
-
-                    <div class="panel-body">
-                        <form class="form-horizontal" ng-controller="KeyToolController">
-                            <div class="form-group">
-                                <div class="col-sm-offset-5 col-sm-10">
-<!--                                    <a target="_self" id="download" ng-click="create()">下载</a>-->
-                                    <button type="submit" class="btn btn-primary" ng-click="create()">
-                                    {{'Common.Create' | translate }}
-                                </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+            <div class="navbar-form navbar-right form-inline" role="search">
+                <div class="form-group app-search-list">
+                    <select id="app-search-list" style="width: 350px"></select>
                 </div>
             </div>
         </div>
     </div>
+</nav>
+    <div class="container-fluid apollo-container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel">
+                <header class="panel-heading form-group">
+                    密钥工具<small>（⚠️ 在线生成非对称加密公钥私钥对）</small>
+                </header>
+                <div class="form-group" ng-controller="KeyToolController">
+                    <div class="col-sm-offset-5 col-sm-10">
+                        <button class="btn btn-primary" ng-click="download()">下载非对称密钥对
+                    </button>
+                    </div>
+                </div>
+                <hr>
+                <header class="panel-heading">
+                    <hr>公钥配置
+                    <small>(⚠️ 配置公钥的时候 固定key : publickey ,正常情况下公钥不允许修改，请谨慎操作 ！！！！)</small>
+                </header>
+                <form class="form-horizontal" ng-controller="KeyToolController">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            <strong style="color: red">*</strong>public_key
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" name="key" ng-model="serverConfig.key"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            <strong style="color: red">*</strong>value
+                        </label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="4" name="value"
+                                      ng-model="serverConfig.value" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">comment</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="4" name="comment"
+                                      ng-model="serverConfig.comment"></textarea>
+                        </div>
+                    </div>
 
-    <div ng-include="'views/common/footer.html'"></div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary" ng-disabled="saveBtnDisabled"
+                                    ng-click="create()">
+                                 保存
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="footer">
+        <hr>
+        <p class="text-center">
+            <span class="glyphicon glyphicon-copyright-mark" aria-hidden="true"></span>蛮牛 框架研发部
+            <a href="https://github.com/ctripcorp/apollo" target="_blank">
+                <img src="../../img/github.png" style="width: 50px; height: 20px;">
+            </a>
+        </p>
+    </div>
+    <iframe src="/sso_heartbeat" class="hide"></iframe>
 
     <!--angular-->
     <script src="vendor/angular/angular.min.js"></script>
@@ -71,7 +134,6 @@
     <script type="application/javascript" src="scripts/services/EnvService.js"></script>
     <script type="application/javascript" src="scripts/services/UserService.js"></script>
     <script type="application/javascript" src="scripts/services/CommonService.js"></script>
-    <script type="application/javascript" src="scripts/services/keyToolService.js"></script>
     <script type="application/javascript" src="scripts/services/PermissionService.js"></script>
 
     <script type="application/javascript" src="scripts/controller/KeyToolController.js"></script>

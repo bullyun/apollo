@@ -1,8 +1,12 @@
 package com.ctrip.framework.apollo.common.utils;
 
 import org.apache.commons.codec.binary.Base64;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.crypto.Cipher;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -13,12 +17,10 @@ import java.util.Map;
 
 public class RSAEncryptUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger(RSAEncryptUtil.class);
+
     private static final String ENCRYPTED_VALUE_PREFIX = "ENC(";
     private static final String ENCRYPTED_VALUE_SUFFIX = ")";
-    private static String PRIVATE_KEY = "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAwszz1lBhRxnoHB61GRpmKp5agZCwQoixxzbaih2RoyEDpoZiCmAGd8Ay"
-            + "ILI1QXfbkHQHvdth8BYR230MUjGJTQIDAQABAkAxu9nVMZhkarzT0RMzYYYMA3nf8mzNz9BzqBGLiZkRKH5SHGV1EjhvKWA1T9gpp+vBCKGFUXTMo5Sr/VOLCfoBAiEA76Rk"
-            + "aW65wU6bNbhyiLkAfitT6FoziP6twxRnsctkpCECIQDQGPre8VWlh5wXS0ze4LcsyZwyg9zQdx+0ULEdcXq/rQIgaeQrVodN34Q7g0Zonc+ZzyaYIiDRiuR2pa/7jg3A/+EC"
-            + "ICr6Lb2je/u+wRbyf0K8iDggvziTkSQgphSYYaviBubVAiEAgR1YqUQcnzGRr77LZ9+QXokfovP0aXZ9zeWR/V+w4Pg=";
 
     /**
      * 生成密钥对
@@ -33,21 +35,13 @@ public class RSAEncryptUtil {
             e.printStackTrace();
         }
         // 初始化密钥对生成器，密钥大小为96-1024位
-        keyPairGen.initialize(512,new SecureRandom());
+        keyPairGen.initialize(512, new SecureRandom());
         KeyPair keyPair = keyPairGen.generateKeyPair();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        // 得到公钥
-        String publicKeyString = new String(Base64.encodeBase64(publicKey.getEncoded()));
-        // 得到私钥
-        String privateKeyString = new String(Base64.encodeBase64((privateKey.getEncoded())));
-        keyMap.put("publicKey",publicKeyString);
-        keyMap.put("privateKey",privateKeyString);
+        keyMap.put("publicKey", new String(Base64.encodeBase64(publicKey.getEncoded())));
+        keyMap.put("privateKey", new String(Base64.encodeBase64((privateKey.getEncoded()))));
         return keyMap;
-    }
-
-    public static String decryptValue(String value) {
-        return decrypt(value,PRIVATE_KEY);
     }
 
     /**
@@ -114,6 +108,39 @@ public class RSAEncryptUtil {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    /**
+     * 获取prikey
+     * @return
+     */
+    public static String getPriKeyString() {
+        File file = new File("/secret/private.key");
+        if (!file.exists()) {
+            logger.info("private.key is not exists");
+            return null;
+        }
+        try {
+            FileReader reader = new FileReader(file);
+            BufferedReader bReader = new BufferedReader(reader);
+            StringBuilder sb = new StringBuilder();
+            String s = "";
+            while ((s =bReader.readLine()) != null) {
+                sb.append(s + "\n");
+            }
+            bReader.close();
+            String str = sb.toString();
+            return str.replaceAll("\u0000","")
+                    .replaceAll("-----BEGIN PRIVATE KEY-----","")
+                    .replaceAll("-----END PRIVATE KEY-----","");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getPriKeyString());
     }
 
     private static String getInnerEncryptedValue(final String value) {

@@ -11,4 +11,5 @@ public interface ConfigConsts {
   long NOTIFICATION_ID_PLACEHOLDER = -1;
   //自定义
   String APOLLO_CONFIG_SERVICE_KEY = "apollo.configService";
+  String APOLLO_ENV_KEY = "env"; //开启本地开发模式
 }

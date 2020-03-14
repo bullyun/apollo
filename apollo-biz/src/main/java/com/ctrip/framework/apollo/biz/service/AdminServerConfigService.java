@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * @author bbb
  * @since 2020-03-13
@@ -99,7 +97,11 @@ public class AdminServerConfigService {
                 if (!RSAEncryptUtil.isEncryptedValue(vaule)) {
                     continue;
                 }
-                jsonObject1.addProperty("value", getNewENcrypt(vaule, serverConfig.getValue()));
+                String NewENcrypData = getNewENcrypt(vaule, serverConfig.getValue());
+                if (NewENcrypData == null) {
+                    continue;
+                }
+                jsonObject1.addProperty("value", NewENcrypData);
                 jsonArray.add(jsonObject1);
             }
             commit.setChangeSets(jsonArray.toString());
@@ -114,7 +116,7 @@ public class AdminServerConfigService {
      */
     private String getNewENcrypt(String oldENcryptData, String publicKey) {
         //老的密码解密获取明文  在用新的公钥加密
-        String data = RSAEncryptUtil.decryptValue(oldENcryptData);
-        return RSAEncryptUtil.encrypt(data, publicKey);
+        String data = RSAEncryptUtil.decrypt(oldENcryptData, RSAEncryptUtil.getPriKeyString());
+        return data == null ? null : RSAEncryptUtil.encrypt(data, publicKey);
     }
 }

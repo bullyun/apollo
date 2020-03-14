@@ -2,6 +2,9 @@ package com.ctrip.framework.apollo.util;
 
 import org.apache.commons.codec.binary.Base64;
 import javax.crypto.Cipher;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -10,13 +13,9 @@ public class RSAEncryptUtil {
 
     private static final String ENCRYPTED_VALUE_PREFIX = "ENC(";
     private static final String ENCRYPTED_VALUE_SUFFIX = ")";
-    private static String PRIVATE_KEY = "MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAwszz1lBhRxnoHB61GRpmKp5agZCwQoixxzbaih2RoyEDpoZiCmAGd8Ay"
-            + "ILI1QXfbkHQHvdth8BYR230MUjGJTQIDAQABAkAxu9nVMZhkarzT0RMzYYYMA3nf8mzNz9BzqBGLiZkRKH5SHGV1EjhvKWA1T9gpp+vBCKGFUXTMo5Sr/VOLCfoBAiEA76Rk"
-            + "aW65wU6bNbhyiLkAfitT6FoziP6twxRnsctkpCECIQDQGPre8VWlh5wXS0ze4LcsyZwyg9zQdx+0ULEdcXq/rQIgaeQrVodN34Q7g0Zonc+ZzyaYIiDRiuR2pa/7jg3A/+EC"
-            + "ICr6Lb2je/u+wRbyf0K8iDggvziTkSQgphSYYaviBubVAiEAgR1YqUQcnzGRr77LZ9+QXokfovP0aXZ9zeWR/V+w4Pg=";
 
     public static String decryptValue(String value) {
-        return decrypt(value,PRIVATE_KEY);
+        return decrypt(value, getPriKeyString());
     }
 
     /**
@@ -47,6 +46,9 @@ public class RSAEncryptUtil {
      *         解密过程中的异常信息
      */
     public static String decrypt(String value, String privateKey) {
+        if (privateKey == null) {
+            return null;
+        }
         try {
             byte[] inputByte = Base64.decodeBase64(getInnerEncryptedValue(value).getBytes("UTF-8"));
             byte[] decoded = Base64.decodeBase64(privateKey);
@@ -55,6 +57,30 @@ public class RSAEncryptUtil {
             cipher.init(Cipher.DECRYPT_MODE, priKey);
             return new String(cipher.doFinal(inputByte));
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static String getPriKeyString() {
+        File file = new File("/secret/private.key");
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            FileReader reader = new FileReader(file);
+            BufferedReader bReader = new BufferedReader(reader);
+            StringBuilder sb = new StringBuilder();
+            String s = "";
+            while ((s =bReader.readLine()) != null) {
+                sb.append(s + "\n");
+            }
+            bReader.close();
+            String str = sb.toString();
+            return str.replaceAll("\u0000","")
+                    .replaceAll("-----BEGIN PRIVATE KEY-----","")
+                    .replaceAll("-----END PRIVATE KEY-----","");
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

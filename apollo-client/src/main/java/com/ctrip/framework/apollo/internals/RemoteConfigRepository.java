@@ -234,7 +234,10 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
             String key = entry.getKey();
             String value = entry.getValue();
             if (RSAEncryptUtil.isEncryptedValue(value)) {
-              map.put(key, RSAEncryptUtil.decryptValue(value));
+              String decryptValue = RSAEncryptUtil.decryptValue(value);
+              if(null != decryptValue) {
+                map.put(key, decryptValue);
+              }
             }
           }
           result.setConfigurations(map);

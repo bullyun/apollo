@@ -6,7 +6,7 @@
 FROM openjdk:8-jre-alpine
 MAINTAINER bullyun
 
-ENV VERSION 1.5.1.11
+ENV VERSION 1.5.1.11-SNAPSHOT
 ENV SERVER_URL ""
 ENV SERVER_PORT 8090
 # DataSource Info

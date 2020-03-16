@@ -130,7 +130,7 @@ public class KeyToolService {
                 in.close();
             }
             if (reportZip != null) {
-//                reportZip.delete();
+                reportZip.delete();
             }
             if (files != null && files.length > 0) {
                 for (String path : files) {

@@ -99,7 +99,7 @@ spec:
       - name: registry-secret
       containers:
       - name: apollo-adminservice
-        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-adminservice:1.5.1.11
+        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-adminservice:1.5.1.11-SNAPSHOT
         imagePullPolicy: Always
         ports:
         - containerPort: 8090
@@ -163,7 +163,7 @@ spec:
       - name: registry-secret
       containers:
       - name: apollo-portal
-        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-portal:1.5.1.11
+        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-portal:1.5.1.11-SNAPSHOT
         imagePullPolicy: Always
         ports:
         - containerPort: 8070
@@ -228,7 +228,7 @@ spec:
       - name: registry-secret
       containers:
       - name: apollo-configservice
-        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-configservice:1.5.1.11
+        image: registry.cn-hangzhou.aliyuncs.com/bullyun/apollo-configservice:1.5.1.11-SNAPSHOT
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

@@ -15,7 +15,7 @@
 
 <body>
     <nav class="navbar navbar-default">
-    <div class="container-fluid">
+        <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand logo" href="/">
                 <img src="../../img/logo-simple.png" style="height:45px; margin-top: -13px">
@@ -31,14 +31,9 @@
                 </li>
             </ul>
 
-            <div class="navbar-form navbar-right form-inline" role="search">
-                <div class="form-group app-search-list">
-                    <select id="app-search-list" style="width: 350px"></select>
-                </div>
-            </div>
         </div>
     </div>
-</nav>
+    </nav>
     <div class="container-fluid apollo-container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
@@ -55,21 +50,12 @@
                 <hr>
                 <header class="panel-heading">
                     <hr>公钥配置
-                    <small>(⚠️ 配置公钥的时候 固定key : publickey ,正常情况下公钥不允许修改，请谨慎操作 ！！！！)</small>
+                    <small>(⚠️ 正常情况下公钥不允许修改，请谨慎操作 ！！！！)</small>
                 </header>
                 <form class="form-horizontal" ng-controller="KeyToolController">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">
                             <strong style="color: red">*</strong>public_key
-                        </label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" name="key" ng-model="serverConfig.key"
-                                   required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">
-                            <strong style="color: red">*</strong>value
                         </label>
                         <div class="col-sm-9">
                             <textarea class="form-control" rows="4" name="value"

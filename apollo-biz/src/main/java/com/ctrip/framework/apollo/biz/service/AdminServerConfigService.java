@@ -85,10 +85,16 @@ public class AdminServerConfigService {
             return;
         }
         for (Commit commit : commits) {
+            //json 格式有2种需要做处理
             JsonParser jsonParser = new JsonParser();
-            JsonObject jsonObject = jsonParser.parse(commit.getChangeSets()).getAsJsonObject();
-            JsonArray jsonArray = jsonParser.parse(jsonObject.get("createItems").toString()).getAsJsonArray();
-            if (jsonArray.size() == 0) {
+            JsonArray jsonArray;
+            if (!getJSONType(commit.getChangeSets())) {
+                jsonArray = jsonParser.parse(commit.getChangeSets()).getAsJsonArray();
+            } else {
+                JsonObject jsonObject = jsonParser.parse(commit.getChangeSets()).getAsJsonObject();
+                jsonArray = jsonParser.parse(jsonObject.get("createItems").toString()).getAsJsonArray();
+            }
+            if (jsonArray == null || jsonArray.size() == 0) {
                 continue;
             }
             for (int i = 0; i < jsonArray.size(); i++) {
@@ -118,5 +124,26 @@ public class AdminServerConfigService {
         //老的密码解密获取明文  在用新的公钥加密
         String data = RSAEncryptUtil.decrypt(oldENcryptData, RSAEncryptUtil.getPriKeyString());
         return data == null ? null : RSAEncryptUtil.encrypt(data, publicKey);
+    }
+
+    /***
+     *
+     * 获取JSON类型
+     * 判断规则
+     * 判断第一个字母是否为{或[ 如果都不是则不是一个JSON格式的文本
+     *
+     * @param str
+     * @return
+     */
+    public static Boolean getJSONType(String str) {
+        final char[] strChar = str.substring(0, 1).toCharArray();
+        final char firstChar = strChar[0];
+        if (firstChar == '{') {
+            return true;
+        } else if (firstChar == '[') {
+            return false;
+        } else {
+            return false;
+        }
     }
 }

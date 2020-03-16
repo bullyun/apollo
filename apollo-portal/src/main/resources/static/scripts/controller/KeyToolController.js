@@ -26,6 +26,7 @@ $scope.download = function() {
     }
 
 $scope.create = function() {
+        $scope.serverConfig.key = "publickey";
         $http({
             method:'POST',
             url:"/server/config",

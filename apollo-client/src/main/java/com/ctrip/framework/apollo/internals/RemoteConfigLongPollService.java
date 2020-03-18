@@ -133,7 +133,7 @@ public class RemoteConfigLongPollService {
     }
   }
 
-  void stopLongPollingRefresh() {
+  public void stopLongPollingRefresh() {
     this.m_longPollingStopped.compareAndSet(false, true);
   }
 

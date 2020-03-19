@@ -135,6 +135,7 @@ public class RemoteConfigLongPollService {
 
   public void stopLongPollingRefresh() {
     this.m_longPollingStopped.compareAndSet(false, true);
+    this.m_longPollingService.shutdown();
   }
 
   private void doLongPollingRefresh(String appId, String cluster, String dataCenter) {
@@ -168,6 +169,10 @@ public class RemoteConfigLongPollService {
 
         final HttpResponse<List<ApolloConfigNotification>> response =
             m_httpUtil.doGet(request, m_responseType);
+
+        if (m_longPollingStopped.get() || Thread.currentThread().isInterrupted()) {
+          break;
+        }
 
         logger.debug("Long polling response: {}, url: {}", response.getStatusCode(), url);
         if (response.getStatusCode() == 200 && response.getBody() != null) {

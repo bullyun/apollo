@@ -131,7 +131,7 @@ then
 fi
 
 declare -i counter=0
-declare -i max_counter=48 # 48*5=240s
+declare -i max_counter=240 # 48*5=240s
 declare -i total_time=0
 
 printf "Waiting for server startup"
